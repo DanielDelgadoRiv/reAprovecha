@@ -13,7 +13,7 @@
 
     <Grid RowDefinitions="3*,Auto,1*"
           Padding="30,40,30,30">
-        
+
         <!-- Contenedor central -->
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
@@ -28,7 +28,7 @@
                     HorizontalOptions="Center"
                     Margin="0,0,0,10"
                     Padding="15">
-                
+
                 <!-- Sombreado -->
                 <Border.Shadow>
                     <Shadow Offset="0,8"
@@ -55,7 +55,7 @@
                    TextColor="{StaticResource Blanco}" 
                    HorizontalOptions="Center"
                    Opacity="0.9" />
-            
+
         </VerticalStackLayout>
 
         <!-- SECCIÓN DE BIENVENIDA -->
@@ -63,7 +63,7 @@
                              VerticalOptions="Center"
                              Spacing="8"
                              Margin="0,20">
-            
+
             <Label Text="Reduce el desperdicio de alimentos"
                    FontSize="14"
                    TextColor="{StaticResource Blanco}"
@@ -88,7 +88,6 @@
                 VerticalOptions="Center"
                 HeightRequest="56"
                 FontSize="18" />
-        
+
     </Grid>
-    
 </ContentPage>
