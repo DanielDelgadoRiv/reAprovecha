@@ -5,10 +5,49 @@
              x:Class="reAprovecha.App">
     <Application.Resources>
         <ResourceDictionary>
+
+            <!-- 1. PALETA DE COLORES GLOBALES -->
+            <Color x:Key="VerdePrincipal">#2E7D32</Color>
+            <!-- Verde medio para botones y textos -->
+            <Color x:Key="VerdeFondo">#1B5E20</Color>
+            <!-- Verde oscuro para la pantalla de inicio -->
+            <Color x:Key="Blanco">#FFFFFF</Color>
+            <Color x:Key="TextoGris">#555555</Color>
+
+            <!-- 2. ESTILOS IMPLÍCITOS -->
+            <!-- Todos los Label de la app tendrán este color gris -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TextoGris}" />
+            </Style>
+
+            <!-- 3. ESTILOS EXPLÍCITOS -->
+
+            <!-- Estilo para el botón blanco de la pantalla de inicio -->
+            <Style x:Key="BotonBlancoStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource Blanco}" />
+                <Setter Property="TextColor" Value="{StaticResource VerdeFondo}" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+            <!-- Estilo para el botón verde principal -->
+            <Style x:Key="BotonVerdeStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource VerdePrincipal}" />
+                <Setter Property="TextColor" Value="{StaticResource Blanco}" />
+                <Setter Property="CornerRadius" Value="25" />
+                <Setter Property="HeightRequest" Value="50" />
+                <Setter Property="FontAttributes" Value="Bold" />
+            </Style>
+
+        </ResourceDictionary>
+        <!--
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
+        -->
     </Application.Resources>
 </Application>

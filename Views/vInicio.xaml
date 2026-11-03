@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:reAprovecha.ViewModels"
+             x:Class="reAprovecha.Views.vInicio"
+             BackgroundColor="{StaticResource VerdeFondo}"
+             NavigationPage.HasNavigationBar="False">
+
+    <!-- Enlace del ViewModel a la Vista (Patrón MVVM) -->
+    <ContentPage.BindingContext>
+        <viewmodels:vInicioViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="3*,Auto,1*"
+          Padding="30,40,30,30">
+        
+        <!-- Contenedor central -->
+        <VerticalStackLayout Grid.Row="0"
+                             VerticalOptions="Center"
+                             Spacing="20">
+
+            <!-- Logotipo -->
+            <Border StrokeShape="RoundRectangle 28"
+                    StrokeThickness="0"
+                    BackgroundColor="#FFFFFF"
+                    HeightRequest="180"
+                    WidthRequest="180"
+                    HorizontalOptions="Center"
+                    Margin="0,0,0,10"
+                    Padding="15">
+                
+                <!-- Sombreado -->
+                <Border.Shadow>
+                    <Shadow Offset="0,8"
+                            Brush="#000000"
+                            Radius="15"
+                            Opacity="0.25" />
+                </Border.Shadow>
+
+                <Image Source="logo_reaprovecha.png"
+                       Aspect="AspectFit" />
+            </Border>
+
+            <!-- Título de la Aplicación -->
+            <Label Text="ReAprovecha" 
+                   FontSize="42" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource Blanco}" 
+                   HorizontalOptions="Center" />
+
+            <!-- Eslogan -->
+            <Label Text="Tu comida, a tiempo" 
+                   FontSize="20" 
+                   FontAttributes="Italic" 
+                   TextColor="{StaticResource Blanco}" 
+                   HorizontalOptions="Center"
+                   Opacity="0.9" />
+            
+        </VerticalStackLayout>
+
+        <!-- SECCIÓN DE BIENVENIDA -->
+        <VerticalStackLayout Grid.Row="1"
+                             VerticalOptions="Center"
+                             Spacing="8"
+                             Margin="0,20">
+            
+            <Label Text="Reduce el desperdicio de alimentos"
+                   FontSize="14"
+                   TextColor="{StaticResource Blanco}"
+                   HorizontalOptions="Center"
+                   FontAttributes="Bold"
+                   Opacity="0.8" />
+
+            <Label Text="Administra y aprovecha al máximo lo que tienes en casa."
+                   FontSize="12"
+                   TextColor="{StaticResource Blanco}"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Opacity="0.6" />
+
+        </VerticalStackLayout>
+
+        <!-- BOTÓN DE ACCIÓN -->
+        <Button Grid.Row="2"
+                Text="Empezar"
+                Command="{Binding NavegarCommand}"
+                Style="{StaticResource BotonBlancoStyle}"
+                VerticalOptions="Center"
+                HeightRequest="56"
+                FontSize="18" />
+        
+    </Grid>
+    
+</ContentPage>
