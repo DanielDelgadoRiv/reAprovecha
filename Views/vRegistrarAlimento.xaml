@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="reAprovecha.Views.vRegistrarAlimento"
+             xmlns:local="clr-namespace:reAprovecha.ViewModels"
+             Title="Agregar Alimento"
+             BackgroundColor="White">
+
+    <!-- ENLACE CON EL VIEWMODEL -->
+    <ContentPage.BindingContext>
+        <local:vRegistrarAlimentoViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30"
+                             Spacing="15">
+
+            <!-- TÍTULO DE LA VISTA -->
+            <Label Text="Nuevo Alimento"
+                   FontSize="28"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,10"
+                   TextColor="{StaticResource VerdePrincipal}" />
+
+            <!-- CAMPO: NOMBRE DEL ALIMENTO -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Entry Placeholder="Nombre del alimento"
+                       Text="{Binding Nombre}"
+                       TextColor="Black" />
+            </Border>
+
+            <!-- CAMPO: CANTIDAD -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Entry Placeholder="Cantidad (Ej. 2 kg)"
+                       Text="{Binding Cantidad}"
+                       TextColor="Black" />
+            </Border>
+
+            <!-- CAMPO: CATEGORÍA (COMBOBOX) -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Picker Title="Seleccionar categoría" 
+                        ItemsSource="{Binding Categorias}" 
+                        SelectedItem="{Binding CategoriaSeleccionada}" 
+                        TextColor="Black" />
+            </Border>
+
+            <!-- CAMPO: FECHA DE VENCIMIENTO -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <DatePicker Date="{Binding FechaVencimiento}"
+                            TextColor="Black" />
+            </Border>
+
+            <!-- BOTÓN: FOTOGRAFÍA (CÁMARA DEL DISPOSITIVO) -->
+            <Button Text="Tomar / Adjuntar Fotografía" 
+                    Command="{Binding TomarFotoCommand}" 
+                    BackgroundColor="#81C784" 
+                    TextColor="White" 
+                    CornerRadius="10" 
+                    HeightRequest="50"
+                    Margin="0,5,0,5"/>
+
+            <!-- BOTÓN: GUARDAR ALIMENTO -->
+            <Button Text="Guardar Alimento"
+                    Command="{Binding GuardarCommand}" 
+                    Style="{StaticResource BotonVerdeStyle}"
+                    Margin="0,10,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

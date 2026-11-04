@@ -6,38 +6,60 @@
     <Application.Resources>
         <ResourceDictionary>
 
-            <!-- 1. PALETA DE COLORES GLOBALES -->
+            <!-- PALETA DE COLORES GLOBALES -->
             <Color x:Key="VerdePrincipal">#2E7D32</Color>
-            <!-- Verde medio para botones y textos -->
             <Color x:Key="VerdeFondo">#1B5E20</Color>
-            <!-- Verde oscuro para la pantalla de inicio -->
             <Color x:Key="Blanco">#FFFFFF</Color>
             <Color x:Key="TextoGris">#555555</Color>
+            <Color x:Key="BordeGrisClaro">#E0E0E0</Color>
 
-            <!-- 2. ESTILOS IMPLÍCITOS -->
-            <!-- Todos los Label de la app tendrán este color gris -->
+            <!-- ESTILOS IMPLÍCITOS -->
             <Style TargetType="Label">
-                <Setter Property="TextColor" Value="{StaticResource TextoGris}" />
+                <Setter Property="TextColor"
+                        Value="{StaticResource TextoGris}" />
             </Style>
 
-            <!-- 3. ESTILOS EXPLÍCITOS -->
-
-            <!-- Estilo para el botón blanco de la pantalla de inicio -->
-            <Style x:Key="BotonBlancoStyle" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{StaticResource Blanco}" />
-                <Setter Property="TextColor" Value="{StaticResource VerdeFondo}" />
-                <Setter Property="CornerRadius" Value="25" />
-                <Setter Property="HeightRequest" Value="50" />
-                <Setter Property="FontAttributes" Value="Bold" />
+            <!-- ESTILOS EXPLÍCITOS PARA BOTONES -->
+            <Style x:Key="BotonBlancoStyle"
+                   TargetType="Button">
+                <Setter Property="BackgroundColor"
+                        Value="{StaticResource Blanco}" />
+                <Setter Property="TextColor"
+                        Value="{StaticResource VerdeFondo}" />
+                <Setter Property="CornerRadius"
+                        Value="25" />
+                <Setter Property="HeightRequest"
+                        Value="50" />
+                <Setter Property="FontAttributes"
+                        Value="Bold" />
             </Style>
 
-            <!-- Estilo para el botón verde principal -->
-            <Style x:Key="BotonVerdeStyle" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="{StaticResource VerdePrincipal}" />
-                <Setter Property="TextColor" Value="{StaticResource Blanco}" />
-                <Setter Property="CornerRadius" Value="25" />
-                <Setter Property="HeightRequest" Value="50" />
-                <Setter Property="FontAttributes" Value="Bold" />
+            <Style x:Key="BotonVerdeStyle"
+                   TargetType="Button">
+                <Setter Property="BackgroundColor"
+                        Value="{StaticResource VerdePrincipal}" />
+                <Setter Property="TextColor"
+                        Value="{StaticResource Blanco}" />
+                <Setter Property="CornerRadius"
+                        Value="25" />
+                <Setter Property="HeightRequest"
+                        Value="55" />
+                <Setter Property="FontAttributes"
+                        Value="Bold" />
+            </Style>
+
+            <!-- ESTILO GLOBAL PARA LOS CONTENEDORES TIPO TARJETA/BORDE -->
+            <Style x:Key="CardBorderStyle"
+                   TargetType="Border">
+                <Setter Property="Stroke"
+                        Value="{StaticResource BordeGrisClaro}" />
+                <Setter Property="StrokeThickness"
+                        Value="1" />
+                <Setter Property="Padding"
+                        Value="15,5" />
+                <Setter Property="StrokeShape">
+                    <RoundRectangle CornerRadius="10" />
+                </Setter>
             </Style>
 
         </ResourceDictionary>

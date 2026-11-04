@@ -2,54 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="reAprovecha.Views.vRegistro"
-             xmlns:local="clr-namespace:reAprovecha.ViewModels"
-             Title="Crear cuenta"
-             BackgroundColor="White">
-
-    <!-- Enlace con el ViewModel -->
-    <ContentPage.BindingContext>
-        <local:vRegistroViewModel />
-    </ContentPage.BindingContext>
-
-    <!-- SECCIÓN DE REGISTRO -->
-    <Grid>
-        <VerticalStackLayout Padding="30"
-                             Spacing="25"
-                             VerticalOptions="Center">
-
-            <Label Text="Crear cuenta" 
-                   FontSize="32" 
-                   FontAttributes="Bold" 
-                   TextColor="#2E7D32" 
-                   HorizontalTextAlignment="Center"
-                   Margin="0,0,0,10"/>
-
-            <Border Stroke="#E0E0E0" 
-                    StrokeThickness="1"
-                    Padding="15,5">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-
-                <Entry Placeholder="Nombre de usuario"
-                       Text="{Binding NombreUsuario}"
-                       ClearButtonVisibility="WhileEditing"
-                       TextColor="Black"
-                       PlaceholderColor="Gray"
-                       FontSize="16"/>
-            </Border>
-
-            <!-- BOTÓN DE ACCIÓN -->
-            <Button Text="Registrarse"
-                    Command="{Binding RegistrarCommand}"
-                    BackgroundColor="#2E7D32"
-                    TextColor="White"
-                    CornerRadius="25"
-                    HeightRequest="55"
-                    FontSize="18"
-                    FontAttributes="Bold"
-                    Margin="0,15,0,0"/>
-
-        </VerticalStackLayout>
-    </Grid>
+             Title="Registro">
+    <VerticalStackLayout VerticalOptions="Center"
+                         HorizontalOptions="Center">
+        <Label Text="Pantalla de Registro en construcción"
+               FontSize="18" />
+    </VerticalStackLayout>
 </ContentPage>
