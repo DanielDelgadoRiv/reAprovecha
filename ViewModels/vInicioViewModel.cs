@@ -1,21 +1,23 @@
 ﻿using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage; // Permite guardar datos localmente
 
 namespace reAprovecha.ViewModels
 {
     public class vInicioViewModel
     {
+        // PROPIEDADES Y COMANDOS
         public ICommand NavegarCommand { get; }
 
+        // CONSTRUCTOR
         public vInicioViewModel()
         {
             NavegarCommand = new Command(OnNavegar);
         }
 
+        // LÓGICA DE NEGOCIO Y NAVEGACIÓN
         private async void OnNavegar()
         {
-            // Verificamos si los datos del usuario ya están almacenados en el teléfono
+            // Verificamos si los datos del usuario ya están almacenados localmente
             bool usuarioRegistrado = Preferences.Default.Get("UsuarioRegistrado", false);
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
 
@@ -27,7 +29,7 @@ namespace reAprovecha.ViewModels
             if (usuarioRegistrado)
             {
                 // Navegación jerárquica hacia el menú principal (Dashboard)
-                await page.Navigation.PushAsync(new Views.vPrincipal());  
+                await page.Navigation.PushAsync(new Views.vPrincipal());
             }
             else
             {

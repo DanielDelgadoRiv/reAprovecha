@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using reAprovecha.Views;
 
 namespace reAprovecha.ViewModels
 {
-    // Heredamos de INotifyPropertyChanged para que la UI se entere de los cambios
+    // HEREDAMOS DE INOTIFYPROPERTYCHANGED PARA NOTIFICAR CAMBIOS A LA UI
     public class vRegistroViewModel : INotifyPropertyChanged
     {
         private string _nombreUsuario;
 
-        // 1. Propiedad conectada al Entry de la pantalla (Data Binding)
+        // PROPIEDAD CONECTADA AL ENTRY DE LA VISTA
         public string NombreUsuario
         {
             get => _nombreUsuario;
@@ -24,35 +25,44 @@ namespace reAprovecha.ViewModels
             }
         }
 
-        // 2. Comando conectado al Botón "Registrarse"
+        // COMANDO CONECTADO AL BOTÓN REGISTRARSE
         public ICommand RegistrarCommand { get; }
 
+        // CONSTRUCTOR
         public vRegistroViewModel()
         {
-            // Inicializamos el comando indicando qué método ejecutar
             RegistrarCommand = new Command(OnRegistrar);
         }
 
+        // LÓGICA DE NEGOCIO Y REGISTRO
         private async void OnRegistrar()
         {
-            // Validación básica para evitar nombres vacíos
+            // VALIDACIÓN BÁSICA PARA EVITAR CAMPOS VACÍOS
             if (string.IsNullOrWhiteSpace(NombreUsuario))
             {
                 await Application.Current.MainPage.DisplayAlert("Aviso", "Por favor, ingresa tu nombre.", "OK");
                 return;
             }
 
-            // 3. Persistencia de datos en el teléfono
+            // PERSISTENCIA DE DATOS LOCALES EN EL DISPOSITIVO
             Preferences.Default.Set("UsuarioActual", NombreUsuario);
+            Preferences.Default.Set("UsuarioRegistrado", true);
 
-            // Confirmación visual
+            // MENSAJE DE CONFIRMACIÓN VISUAL
             await Application.Current.MainPage.DisplayAlert("¡Bienvenido!", $"Hola {NombreUsuario}, cuenta creada con éxito.", "Empezar");
 
-            // 4. Navegación a la pantalla principal
-            await Application.Current.MainPage.Navigation.PushAsync(new vPrincipal());
+            // VALIDACIÓN DEFENSIVA DE NULOS ANTES DE LA NAVEGACIÓN JERÁRQUICA
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null)
+            {
+                return;
+            }
+
+            // NAVEGACIÓN HACIA LA PANTALLA PRINCIPAL
+            await page.Navigation.PushAsync(new vPrincipal());
         }
 
-        // Motor del Data Binding (Notificador de cambios)
+        // MOTOR DEL DATA BINDING (NOTIFICADOR DE CAMBIOS)
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {

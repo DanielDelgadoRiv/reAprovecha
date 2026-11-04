@@ -6,7 +6,7 @@
              BackgroundColor="{StaticResource VerdeFondo}"
              NavigationPage.HasNavigationBar="False">
 
-    <!-- Enlace del ViewModel a la Vista (Patrón MVVM) -->
+    <!-- ENLACE CON EL VIEWMODEL -->
     <ContentPage.BindingContext>
         <viewmodels:vInicioViewModel />
     </ContentPage.BindingContext>
@@ -14,12 +14,12 @@
     <Grid RowDefinitions="3*,Auto,1*"
           Padding="30,40,30,30">
 
-        <!-- Contenedor central -->
+        <!-- SECCIÓN DE LOGOTIPO Y TÍTULO -->
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
                              Spacing="20">
 
-            <!-- Logotipo -->
+            <!-- CONTENEDOR DE IMAGEN -->
             <Border StrokeShape="RoundRectangle 28"
                     StrokeThickness="0"
                     BackgroundColor="#FFFFFF"
@@ -29,7 +29,7 @@
                     Margin="0,0,0,10"
                     Padding="15">
 
-                <!-- Sombreado -->
+                <!-- SOMBREADO DE TARJETA -->
                 <Border.Shadow>
                     <Shadow Offset="0,8"
                             Brush="#000000"
@@ -41,14 +41,14 @@
                        Aspect="AspectFit" />
             </Border>
 
-            <!-- Título de la Aplicación -->
+            <!-- TÍTULO DE LA APLICACIÓN -->
             <Label Text="ReAprovecha" 
                    FontSize="42" 
                    FontAttributes="Bold" 
                    TextColor="{StaticResource Blanco}" 
                    HorizontalOptions="Center" />
 
-            <!-- Eslogan -->
+            <!-- ESLOGAN -->
             <Label Text="Tu comida, a tiempo" 
                    FontSize="20" 
                    FontAttributes="Italic" 

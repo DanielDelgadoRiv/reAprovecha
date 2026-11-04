@@ -6,48 +6,39 @@
              Title="Crear cuenta"
              BackgroundColor="White">
 
-    <!-- Enlace con el ViewModel -->
+    <!-- ENLACE CON EL VIEWMODEL -->
     <ContentPage.BindingContext>
         <local:vRegistroViewModel />
     </ContentPage.BindingContext>
 
-    <!-- SECCIÓN DE REGISTRO -->
+    <!-- SECCIÓN DE BIENVENIDA Y FORMULARIO -->
     <Grid>
         <VerticalStackLayout Padding="30"
                              Spacing="25"
                              VerticalOptions="Center">
 
+            <!-- TÍTULO DE LA VISTA -->
             <Label Text="Crear cuenta" 
                    FontSize="32" 
                    FontAttributes="Bold" 
-                   TextColor="#2E7D32" 
+                   TextColor="{StaticResource VerdePrincipal}" 
                    HorizontalTextAlignment="Center"
                    Margin="0,0,0,10"/>
 
-            <Border Stroke="#E0E0E0" 
-                    StrokeThickness="1"
-                    Padding="15,5">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-
+            <!-- CONTENEDOR DE ENTRADA: NOMBRE DE USUARIO -->
+            <Border Style="{StaticResource CardBorderStyle}">
                 <Entry Placeholder="Nombre de usuario"
                        Text="{Binding NombreUsuario}"
                        ClearButtonVisibility="WhileEditing"
                        TextColor="Black"
-                       PlaceholderColor="Gray"
+                       PlaceholderColor="{StaticResource TextoGris}"
                        FontSize="16"/>
             </Border>
 
-            <!-- BOTÓN DE ACCIÓN -->
+            <!-- BOTÓN DE ACCIÓN PRINCIPAL -->
             <Button Text="Registrarse"
                     Command="{Binding RegistrarCommand}"
-                    BackgroundColor="#2E7D32"
-                    TextColor="White"
-                    CornerRadius="25"
-                    HeightRequest="55"
-                    FontSize="18"
-                    FontAttributes="Bold"
+                    Style="{StaticResource BotonVerdeStyle}"
                     Margin="0,15,0,0"/>
 
         </VerticalStackLayout>
