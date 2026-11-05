@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:reAprovecha.ViewModels"
+             x:Class="reAprovecha.Views.vMisAlimentos"
+             Title="Mis Alimentos"
+             BackgroundColor="{StaticResource VerdeFondo}">
+
+    <!-- ENLACE CON EL VIEWMODEL -->
+    <ContentPage.BindingContext>
+        <viewmodels:vMisAlimentosViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *"
+          Padding="20">
+
+        <!-- SECCIÓN DE TÍTULO Y FILTRADO RÁPIDO -->
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="10"
+                             Margin="0,0,0,15">
+            <Label Text="Inventario del Hogar"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Blanco}" />
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <SearchBar Placeholder="Buscar alimento..."
+                           Text="{Binding TextoBusqueda}"
+                           TextColor="Black" />
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- SECCIÓN DE LISTADO DE ALIMENTOS (COLLECTIONVIEW) -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding ListaAlimentos}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource CardBorderStyle}"
+                            BackgroundColor="White"
+                            Margin="0,0,0,10">
+                        <Grid ColumnDefinitions="*, Auto"
+                              Padding="15">
+
+                            <!-- INFORMACIÓN DEL ALIMENTO -->
+                            <VerticalStackLayout Grid.Column="0"
+                                                 Spacing="4">
+                                <Label Text="{Binding Nombre}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource VerdePrincipal}" />
+                                <Label Text="{Binding DetalleCantidadCategoria}"
+                                       FontSize="14"
+                                       TextColor="Gray" />
+                                <Label Text="{Binding DetalleVencimiento}"
+                                       FontSize="12"
+                                       TextColor="DarkRed" />
+                            </VerticalStackLayout>
+
+                            <!-- BOTONES DE ACCIÓN (CONSUMIR / ELIMINAR) -->
+                            <HorizontalStackLayout Grid.Column="1"
+                                                   Spacing="8"
+                                                   VerticalOptions="Center">
+                                <Button Text="✔"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=ConsumirAlimentoCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#81C784"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        WidthRequest="40"
+                                        HeightRequest="40" />
+
+                                <Button Text="🗑"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=EliminarAlimentoCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="#E57373"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        WidthRequest="40"
+                                        HeightRequest="40" />
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

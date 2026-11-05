@@ -61,7 +61,7 @@ namespace reAprovecha.ViewModels
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (page is null) return;
 
-            await page.DisplayAlert("Inventario", "Módulo de listado de alimentos en desarrollo.", "OK");
+            await page.Navigation.PushAsync(new vMisAlimentos());
         }
 
         // LÓGICA DE NAVEGACIÓN HACIA RECETAS IA
