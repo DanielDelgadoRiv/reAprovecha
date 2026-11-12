@@ -14,7 +14,7 @@
     <Grid RowDefinitions="3*,Auto,1*"
           Padding="30,40,30,30">
         
-        <!-- Contenedor central -->
+        <!-- CONTENEDOR CENTRAL -->
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
                              Spacing="20">
@@ -29,7 +29,7 @@
                     Margin="0,0,0,10"
                     Padding="15">
                 
-                <!-- Sombreado -->
+                <!-- SOMBREADO -->
                 <Border.Shadow>
                     <Shadow Offset="0,8"
                             Brush="#000000"

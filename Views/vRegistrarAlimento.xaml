@@ -22,35 +22,42 @@
                    Margin="0,0,0,10"
                    TextColor="{StaticResource VerdePrincipal}" />
 
-            <!-- CAMPO: NOMBRE DEL ALIMENTO -->
+            <!-- NOMBRE DEL ALIMENTO -->
             <Border Style="{StaticResource CardBorderStyle}">
                 <Entry Placeholder="Nombre del alimento"
                        Text="{Binding Nombre}"
-                       TextColor="Black" />
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       FontSize="16" />
             </Border>
 
-            <!-- CAMPO: CANTIDAD -->
+            <!-- CANTIDAD -->
             <Border Style="{StaticResource CardBorderStyle}">
                 <Entry Placeholder="Cantidad (Ej. 2 kg)"
                        Text="{Binding Cantidad}"
-                       TextColor="Black" />
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       FontSize="16" />
             </Border>
 
-            <!-- CAMPO: CATEGORÍA (COMBOBOX) -->
+            <!-- CATEGORÍA (COMBOBOX) -->
             <Border Style="{StaticResource CardBorderStyle}">
                 <Picker Title="Seleccionar categoría" 
                         ItemsSource="{Binding Categorias}" 
                         SelectedItem="{Binding CategoriaSeleccionada}" 
-                        TextColor="Black" />
+                        TitleColor="Gray"
+                        TextColor="Black"
+                        FontSize="16" />
             </Border>
 
-            <!-- CAMPO: FECHA DE VENCIMIENTO -->
+            <!-- FECHA DE VENCIMIENTO -->
             <Border Style="{StaticResource CardBorderStyle}">
                 <DatePicker Date="{Binding FechaVencimiento}"
-                            TextColor="Black" />
+                            TextColor="Black"
+                            FontSize="16" />
             </Border>
 
-            <!-- BOTÓN: FOTOGRAFÍA (CÁMARA DEL DISPOSITIVO) -->
+            <!-- AGREGAR FOTO -->
             <Button Text="Tomar / Adjuntar Fotografía" 
                     Command="{Binding TomarFotoCommand}" 
                     BackgroundColor="#81C784" 
@@ -59,7 +66,7 @@
                     HeightRequest="50"
                     Margin="0,5,0,5"/>
 
-            <!-- BOTÓN: GUARDAR ALIMENTO -->
+            <!-- BOTÓN DE ACCIÓN -->
             <Button Text="Guardar Alimento"
                     Command="{Binding GuardarCommand}" 
                     Style="{StaticResource BotonVerdeStyle}"

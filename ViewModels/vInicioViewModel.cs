@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage; // Librería de MAUI para almacenamiento local ligero
+using Microsoft.Maui.Storage;
 
 namespace reAprovecha.ViewModels
 {
