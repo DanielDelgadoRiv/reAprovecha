@@ -20,7 +20,11 @@
             <Label Text="{Binding SaludoUsuario}"
                    FontSize="24"
                    FontAttributes="Bold"
-                   TextColor="{StaticResource Blanco}" />
+                   TextColor="{StaticResource Blanco}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EditarUsuarioCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
 
             <!-- TARJETA DE ALERTAS DE VENCIMIENTO -->
             <Border Style="{StaticResource CardBorderStyle}"

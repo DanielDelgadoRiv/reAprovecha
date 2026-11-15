@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="reAprovecha.Views.vRegistro"
              xmlns:local="clr-namespace:reAprovecha.ViewModels"
-             Title="Crear cuenta"
+             Title="Perfil Usuario"
              BackgroundColor="White">
 
     <!-- ENLACE CON EL VIEWMODEL -->
@@ -17,7 +17,7 @@
                              Spacing="25"
                              VerticalOptions="Center">
 
-            <Label Text="Crear cuenta" 
+            <Label Text="Crear perfil" 
                    FontSize="32" 
                    FontAttributes="Bold" 
                    TextColor="#2E7D32" 

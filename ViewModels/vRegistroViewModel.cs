@@ -37,15 +37,19 @@ namespace reAprovecha.ViewModels
         {
             if (string.IsNullOrWhiteSpace(NombreUsuario))
             {
-                await Application.Current.MainPage.DisplayAlert("Aviso", "Por favor, ingresa tu nombre.", "OK");
+                await Application.Current.MainPage.DisplayAlertAsync("Aviso", "Por favor, ingresa tu nombre.", "OK");
                 return;
             }
 
             Preferences.Default.Set("UsuarioActual", NombreUsuario);
             Preferences.Default.Set("UsuarioRegistrado", true);
 
-            await Application.Current.MainPage.DisplayAlert("¡Bienvenido!", $"Hola {NombreUsuario}, cuenta creada con éxito.", "Empezar");
+            await Application.Current.MainPage.DisplayAlertAsync($"¡Bienvenido {NombreUsuario}!", "Perfil creado con éxito.", "Empezar");
 
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null) return;
+
+            await page.Navigation.PushAsync(new vPrincipal());
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
