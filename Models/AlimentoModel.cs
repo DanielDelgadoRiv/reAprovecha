@@ -8,6 +8,7 @@
         public string Cantidad { get; set; }
         public string Categoria { get; set; }
         public DateTime FechaVencimiento { get; set; }
+        public string RutaImagen { get; set; }
 
         // PROPIEDADES CALCULADAS PARA MOSTRAR EN LA VISTA
         public string DetalleCantidadCategoria => $"{Cantidad} | Categoría: {Categoria}";
