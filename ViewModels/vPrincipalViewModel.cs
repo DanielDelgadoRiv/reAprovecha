@@ -30,6 +30,7 @@ namespace reAprovecha.ViewModels
         public ICommand IrMisAlimentosCommand { get; }
         public ICommand IrRecetasCommand { get; }
         public ICommand IrUbicacionCommand { get; }
+        public ICommand EditarUsuarioCommand { get; }
 
         // CONSTRUCTOR
         public vPrincipalViewModel()
@@ -44,6 +45,7 @@ namespace reAprovecha.ViewModels
             IrMisAlimentosCommand = new Command(OnIrMisAlimentos);
             IrRecetasCommand = new Command(OnIrRecetas);
             IrUbicacionCommand = new Command(OnIrUbicacion);
+            EditarUsuarioCommand = new Command(OnEditarUsuario);
         }
 
         // LÓGICA DE NAVEGACIÓN HACIA REGISTRAR ALIMENTO
@@ -70,7 +72,7 @@ namespace reAprovecha.ViewModels
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (page is null) return;
 
-            await page.DisplayAlert("Recetas IA", "Módulo de OpenAI en desarrollo.", "OK");
+            await page.DisplayAlertAsync("Recetas IA", "Módulo de OpenAI en desarrollo.", "OK");
         }
 
         // LÓGICA DE NAVEGACIÓN HACIA UBICACIÓN
@@ -79,7 +81,33 @@ namespace reAprovecha.ViewModels
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (page is null) return;
 
-            await page.DisplayAlert("GPS", "Módulo de mapas y ubicaciones en desarrollo.", "OK");
+            await page.DisplayAlertAsync("GPS", "Módulo de mapas y ubicaciones en desarrollo.", "OK");
+        }
+
+        // LÓGICA PARA EDITAR EL NOMBRE DE USUARIO
+        private async void OnEditarUsuario()
+        {
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null) return;
+
+            // MOSTRAMOS UN DIÁLOGO NATIVO PARA CAPTURAR EL NUEVO NOMBRE
+            string nuevoNombre = await page.DisplayPromptAsync(
+                "Editar Perfil",
+                "Actualiza tu nombre de usuario:",
+                initialValue: Preferences.Default.Get("UsuarioActual", "Usuario"),
+                maxLength: 30,
+                keyboard: Keyboard.Text);
+
+            if (!string.IsNullOrWhiteSpace(nuevoNombre))
+            {
+                // GUARDAMOS EL NUEVO VALOR EN LAS PREFERENCIAS LOCALES
+                Preferences.Default.Set("UsuarioActual", nuevoNombre.Trim());
+
+                // ACTUALIZAMOS LA PROPIEDAD REACTIVA PARA QUE LA VISTA REFLEJE EL CAMBIO AL INSTANTE
+                SaludoUsuario = $"¡Hola, {nuevoNombre.Trim()}!";
+
+                await page.DisplayAlertAsync("Éxito", "Nombre de usuario actualizado correctamente.", "OK");
+            }
         }
 
         // MOTOR DEL DATA BINDING (NOTIFICADOR DE CAMBIOS)
