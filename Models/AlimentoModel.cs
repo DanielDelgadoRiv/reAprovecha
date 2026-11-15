@@ -1,9 +1,13 @@
-﻿namespace reAprovecha.Models
+﻿using SQLite;
+
+namespace reAprovecha.Models
 {
     // MODELO DE DATOS PARA CADA ALIMENTO REGISTRADO
     public class AlimentoModel
     {
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
         public string Nombre { get; set; }
         public string Cantidad { get; set; }
         public string Categoria { get; set; }

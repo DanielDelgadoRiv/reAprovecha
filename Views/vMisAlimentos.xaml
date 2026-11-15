@@ -25,8 +25,10 @@
 
             <Border Style="{StaticResource CardBorderStyle}">
                 <SearchBar Placeholder="Buscar alimento..."
+                           PlaceholderColor="LightGray"
                            Text="{Binding TextoBusqueda}"
-                           TextColor="Black" />
+                           TextColor="LightGray"
+                           FontSize="16"/>
             </Border>
         </VerticalStackLayout>
 

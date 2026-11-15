@@ -8,7 +8,7 @@ namespace reAprovecha.Data
     {
         private SQLiteAsyncConnection _database;
 
-        // INICIALIZACIÓN DE LA CONEXIÓN Y CREACIÓN DE TABLAS
+        // INICIALIZACIÓN SEGURA DE LA CONEXIÓN Y CREACIÓN OBLIGATORIA DE TABLAS
         private async Task Init()
         {
             if (_database != null)
@@ -16,6 +16,8 @@ namespace reAprovecha.Data
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "reaprovecha.db3");
             _database = new SQLiteAsyncConnection(dbPath);
+
+            // CREACIÓN EXPLÍCITA DE LA TABLA ASEGURANDO LA PERSISTENCIA LOCAL
             await _database.CreateTableAsync<AlimentoModel>();
         }
 

@@ -147,7 +147,7 @@ namespace reAprovecha.ViewModels
             await _baseDatosService.GuardarAlimentoAsync(nuevoAlimento);
 
             // MENSAJE DE ÉXITO Y RETORNO
-            await page.DisplayAlertAsync("Éxito", $"Alimento '{Nombre}' ({Cantidad}) guardado localmente en la base de datos.", "Genial");
+            await page.DisplayAlertAsync("Éxito", $"Alimento '{Nombre}' ({Cantidad}) guardado.", "OK");
             await page.Navigation.PopAsync();
         }
 
