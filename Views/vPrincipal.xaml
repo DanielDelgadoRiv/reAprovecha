@@ -38,6 +38,11 @@
                     <Label Text="{Binding AlertaVencimientoTexto}"
                            FontSize="14"
                            TextColor="Black" />
+
+                    <!-- BOTÓN DE ACCIÓN HACIA AVISOS -->
+                    <Button Text="Ver avisos"
+                            Command="{Binding IrAvisosCommand}"
+                            Style="{StaticResource BotonVerdeStyle}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -66,3 +71,4 @@
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+    
