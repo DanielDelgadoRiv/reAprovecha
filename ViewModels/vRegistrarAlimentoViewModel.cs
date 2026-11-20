@@ -134,13 +134,14 @@ namespace reAprovecha.ViewModels
                 return;
             }
 
-            // CREACIÓN DEL MODELO DE DATOS PARA SQLite
+            // CREACIÓN DEL MODELO DE DATOS PARA SQLITE
             var nuevoAlimento = new AlimentoModel
             {
                 Nombre = Nombre.Trim(),
                 Cantidad = Cantidad.Trim(),
                 Categoria = CategoriaSeleccionada,
-                FechaVencimiento = FechaVencimiento
+                FechaVencimiento = FechaVencimiento,
+                RutaImagen = _rutaImagenLocal
             };
 
             // ALMACENAMIENTO FÍSICO EN LA BASE DE DATOS LOCAL

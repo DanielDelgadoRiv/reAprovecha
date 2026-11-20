@@ -39,6 +39,7 @@ namespace reAprovecha.ViewModels
         public ICommand ConsumirAlimentoCommand { get; }
         public ICommand EliminarAlimentoCommand { get; }
         public ICommand CargarAlimentosCommand { get; }
+        public ICommand VerFotoAlimentoCommand { get; }
 
         // CONSTRUCTOR
         public vMisAlimentosViewModel()
@@ -51,6 +52,7 @@ namespace reAprovecha.ViewModels
             ConsumirAlimentoCommand = new Command<object>(OnConsumirAlimento);
             EliminarAlimentoCommand = new Command<object>(OnEliminarAlimento);
             CargarAlimentosCommand = new Command(async () => await CargarAlimentosAsync());
+            VerFotoAlimentoCommand = new Command<object>(OnVerFotoAlimento);
 
             // CARGAMOS LOS DATOS REALES DE SQLITE AL INICIALIZAR LA VISTA
             _ = CargarAlimentosAsync();
@@ -149,6 +151,76 @@ namespace reAprovecha.ViewModels
                 {
                     await page.DisplayAlertAsync("Error", $"No se pudo eliminar el registro: {ex.Message}", "OK");
                 }
+            }
+        }
+
+        // LÓGICA PARA VISUALIZAR LA FOTOGRAFÍA DEL ALIMENTO SELECCIONADO
+        private async void OnVerFotoAlimento(object parameter)
+        {
+            // VALIDACIÓN DE PARÁMETRO Y VISTA
+            if (parameter is not AlimentoModel alimento) return;
+
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null) return;
+
+            // VERIFICACIÓN DE ARCHIVO DE IMAGEN
+            if (string.IsNullOrWhiteSpace(alimento.RutaImagen) || !File.Exists(alimento.RutaImagen))
+            {
+                await page.DisplayAlertAsync("Sin fotografía", $"'{alimento.Nombre}' no tiene una fotografía disponible en el dispositivo.", "OK");
+                return;
+            }
+
+            // VISTA MODAL DE FOTOGRAFÍA
+            try
+            {
+                var resources = Application.Current?.Resources;
+                var paginaFoto = new ContentPage
+                {
+                    Title = alimento.Nombre,
+                    BackgroundColor = resources != null && resources.TryGetValue("VerdeFondo", out var bg) && bg is Color cBg ? cBg : Colors.Black,
+                    Content = new Grid
+                    {
+                        RowDefinitions =
+                {
+                    new RowDefinition { Height = GridLength.Star },
+                    new RowDefinition { Height = GridLength.Auto }
+                },
+                        Padding = 20,
+                        Children =
+                {
+                    new Border
+                    {
+                        Style = resources != null && resources.TryGetValue("CardBorderStyle", out var st) && st is Style sCard ? sCard : null,
+                        BackgroundColor = Colors.White,
+                        Padding = 10,
+                        Content = new Image
+                        {
+                            Source = ImageSource.FromFile(alimento.RutaImagen),
+                            Aspect = Aspect.AspectFit
+                        }
+                    },
+                    new Button
+                    {
+                        Text = "Cerrar",
+                        Style = resources != null && resources.TryGetValue("BotonVerdeStyle", out var btnSt) && btnSt is Style sBtn ? sBtn : null,
+                        Command = new Command(async () => await page.Navigation.PopModalAsync()),
+                        Margin = new Thickness(0, 15, 0, 0)
+                    }
+                }
+                    }
+                };
+
+                if (paginaFoto.Content is Grid grid && grid.Children.Count > 1 && grid.Children[1] is BindableObject botonCerrar)
+                {
+                    Grid.SetRow(botonCerrar, 1);
+                }
+
+                await page.Navigation.PushModalAsync(paginaFoto);
+            }
+            catch (Exception ex)
+            {
+                // MANEJO DE ERRORES
+                await page.DisplayAlertAsync("Error", $"No se pudo abrir la fotografía: {ex.Message}", "OK");
             }
         }
 

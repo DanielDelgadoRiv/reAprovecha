@@ -17,13 +17,19 @@ namespace reAprovecha.Models
 
         // PROPIEDADES CALCULADAS PARA MOSTRAR EN LA VISTA
         [Ignore]
+        public bool TieneFoto => !string.IsNullOrWhiteSpace(RutaImagen);
+
+        [Ignore]
         public int DiasRestantes => (FechaVencimiento.Date - DateTime.Today).Days;
 
         [Ignore]
         public bool EsProximoAVencer => DiasRestantes <= 2;
 
         [Ignore]
-        public string DetalleCantidadCategoria => $"{Cantidad} | Categoría: {Categoria}";
+        public string DetalleCantidad => $"Cantidad: {Cantidad}";
+
+        [Ignore]
+        public string DetalleCategoria => $"Categoría: {Categoria}";
 
         [Ignore]
         public string DetalleVencimiento => $"Vence el: {FechaVencimiento:dd/MM/yyyy}";

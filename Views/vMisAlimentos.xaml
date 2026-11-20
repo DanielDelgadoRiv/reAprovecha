@@ -45,12 +45,16 @@
 
                             <!-- INFORMACIÓN DEL ALIMENTO -->
                             <VerticalStackLayout Grid.Column="0"
-                                                 Spacing="4">
+                                                 Spacing="3"
+                                                 Margin="0,0,10,0">
                                 <Label Text="{Binding Nombre}"
                                        FontSize="18"
                                        FontAttributes="Bold"
                                        TextColor="{StaticResource VerdePrincipal}" />
-                                <Label Text="{Binding DetalleCantidadCategoria}"
+                                <Label Text="{Binding DetalleCantidad}"
+                                       FontSize="14"
+                                       TextColor="Gray" />
+                                <Label Text="{Binding DetalleCategoria}"
                                        FontSize="14"
                                        TextColor="Gray" />
                                 <Label Text="{Binding DetalleVencimiento}"
@@ -58,28 +62,38 @@
                                        TextColor="DarkRed" />
                             </VerticalStackLayout>
 
-                            <!-- BOTONES DE ACCIÓN (CONSUMIR / ELIMINAR) -->
-                            <HorizontalStackLayout Grid.Column="1"
-                                                   Spacing="8"
-                                                   VerticalOptions="Center">
-                                <Button Text="✔"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=ConsumirAlimentoCommand}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="#81C784"
-                                        TextColor="White"
-                                        CornerRadius="8"
-                                        WidthRequest="40"
-                                        HeightRequest="40" />
+                            <!-- BOTONES DE ACCIÓN (VER FOTO / CONSUMIR / ELIMINAR) -->
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Spacing="8"
+                                                 VerticalOptions="Center"
+                                                 HorizontalOptions="End">
 
-                                <Button Text="🗑"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=EliminarAlimentoCommand}"
+                                <!-- BOTÓN VISIBLE SOLO SI EL ALIMENTO TIENE FOTOGRAFÍA -->
+                                <Button Text="Ver foto"
+                                        IsVisible="{Binding TieneFoto}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=VerFotoAlimentoCommand}"
                                         CommandParameter="{Binding .}"
-                                        BackgroundColor="#E57373"
-                                        TextColor="White"
-                                        CornerRadius="8"
-                                        WidthRequest="40"
-                                        HeightRequest="40" />
-                            </HorizontalStackLayout>
+                                        Style="{StaticResource BotonVerdeStyle}"
+                                        FontSize="12"
+                                        Padding="10,4"
+                                        HeightRequest="34" />
+
+                                <!-- ACCIONES PRINCIPALES DEL INVENTARIO -->
+                                <HorizontalStackLayout Grid.Column="1"
+                                                       Spacing="8"
+                                                       HorizontalOptions="Center">
+                                    <Button Text="✔"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=ConsumirAlimentoCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Style="{StaticResource BotonConsumirStyle}" />
+
+                                    <Button Text="🗑"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=EliminarAlimentoCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Style="{StaticResource BotonEliminarStyle}" />
+                                </HorizontalStackLayout>
+
+                            </VerticalStackLayout>
 
                         </Grid>
                     </Border>
@@ -89,3 +103,4 @@
 
     </Grid>
 </ContentPage>
+    
