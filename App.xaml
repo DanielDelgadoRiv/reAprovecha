@@ -9,6 +9,7 @@
             <!-- PALETA DE COLORES GLOBALES -->
             <Color x:Key="VerdePrincipal">#2E7D32</Color>
             <Color x:Key="VerdeFondo">#1B5E20</Color>
+            <Color x:Key="VerdeClaro">#A5D6A7</Color>
             <Color x:Key="Blanco">#FFFFFF</Color>
             <Color x:Key="TextoGris">#555555</Color>
             <Color x:Key="BordeGrisClaro">#E0E0E0</Color>
