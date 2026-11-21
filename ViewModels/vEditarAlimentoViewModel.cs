@@ -60,11 +60,11 @@ namespace reAprovecha.ViewModels
         public ICommand GuardarCambiosCommand { get; }
         public ICommand CancelarCommand { get; }
 
-        // CONSTRUCTOR CON INYECCIÓN DE DEPENDENCIAS
-        public vEditarAlimentoViewModel(BaseDatosService baseDatosService = null)
+        // CONSTRUCTOR PÚBLICO SIN PARÁMETROS PARA ENLACE DIRECTO EN XAML
+        public vEditarAlimentoViewModel()
         {
-            // INICIALIZAMOS O REUTILIZAMOS EL SERVICIO SQLITE
-            _baseDatosService = baseDatosService ?? new BaseDatosService();
+            // INICIALIZAMOS EL SERVICIO SQLITE
+            _baseDatosService = new BaseDatosService();
 
             // CATEGORÍAS DE ALIMENTOS PREDEFINIDAS PARA EL PICKER
             Categorias = new List<string>
