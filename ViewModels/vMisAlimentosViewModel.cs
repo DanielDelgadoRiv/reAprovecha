@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using reAprovecha.Data;
 using reAprovecha.Models;
+using reAprovecha.Views;
 
 namespace reAprovecha.ViewModels
 {
@@ -40,6 +41,7 @@ namespace reAprovecha.ViewModels
         public ICommand EliminarAlimentoCommand { get; }
         public ICommand CargarAlimentosCommand { get; }
         public ICommand VerFotoAlimentoCommand { get; }
+        public ICommand EditarAlimentoCommand { get; }
 
         // CONSTRUCTOR
         public vMisAlimentosViewModel()
@@ -53,6 +55,7 @@ namespace reAprovecha.ViewModels
             EliminarAlimentoCommand = new Command<object>(OnEliminarAlimento);
             CargarAlimentosCommand = new Command(async () => await CargarAlimentosAsync());
             VerFotoAlimentoCommand = new Command<object>(OnVerFotoAlimento);
+            EditarAlimentoCommand = new Command<object>(OnEditarAlimento);
 
             // CARGAMOS LOS DATOS REALES DE SQLITE AL INICIALIZAR LA VISTA
             _ = CargarAlimentosAsync();
@@ -221,6 +224,34 @@ namespace reAprovecha.ViewModels
             {
                 // MANEJO DE ERRORES
                 await page.DisplayAlertAsync("Error", $"No se pudo abrir la fotografía: {ex.Message}", "OK");
+            }
+        }
+
+        // MÉTODO PARA ABRIR LA PANTALLA DE EDICIÓN DEL ALIMENTO SELECCIONADO
+        private async void OnEditarAlimento(object parameter)
+        {
+            if (parameter is not AlimentoModel alimento) return;
+
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null) return;
+
+            try
+            {
+                // INSTANCIAMOS LA VISTA DE EDICIÓN Y CARGAMOS EL ALIMENTO EN SU VIEWMODEL
+                var vistaEditar = new Views.vEditarAlimento();
+                if (vistaEditar.BindingContext is vEditarAlimentoViewModel editarViewModel)
+                {
+                    editarViewModel.CargarAlimento(alimento);
+                }
+
+                await page.Navigation.PushModalAsync(vistaEditar);
+
+                // RECARGAMOS EL INVENTARIO DESDE SQLITE AL REGRESAR DE LA EDICIÓN
+                await CargarAlimentosAsync();
+            }
+            catch (Exception ex)
+            {
+                await page.DisplayAlertAsync("Error", $"No se pudo abrir la edición: {ex.Message}", "OK");
             }
         }
 
