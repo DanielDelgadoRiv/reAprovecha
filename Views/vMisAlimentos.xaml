@@ -68,27 +68,8 @@
                                                  Spacing="8"
                                                  VerticalOptions="Center"
                                                  HorizontalOptions="End">
-
-                                <!-- BOTÓN VISIBLE SOLO SI EL ALIMENTO TIENE FOTOGRAFÍA -->
-                                <Button Text="Ver foto"
-                                        IsVisible="{Binding TieneFoto}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=VerFotoAlimentoCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Style="{StaticResource BotonVerdeStyle}"
-                                        FontSize="12"
-                                        Padding="10,4"
-                                        HeightRequest="34" />
-
-                                <!-- BOTÓN PARA EDITAR EL ALIMENTO SELECCIONADO -->
-                                <Button Text="Editar"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=EditarAlimentoCommand}"
-                                        CommandParameter="{Binding .}"
-                                        Style="{StaticResource BotonVerdeStyle}"
-                                        FontSize="12"
-                                        Padding="10,4"
-                                        HeightRequest="34" />
-
-                                <!-- ACCIONES PRINCIPALES DEL INVENTARIO -->
+                                
+                                <!-- FILA SUPERIOR DE ACCIONES PRINCIPALES DEL INVENTARIO -->
                                 <HorizontalStackLayout Spacing="8"
                                                        HorizontalOptions="Center">
                                     <Button Text="✔"
@@ -102,6 +83,21 @@
                                             Style="{StaticResource BotonEliminarStyle}" />
                                 </HorizontalStackLayout>
 
+                                <!-- FILA INFERIOR DE ACCIONES (VER FOTO Y EDITAR) -->
+                                <HorizontalStackLayout Spacing="8"
+                                                       HorizontalOptions="Center">
+                                    <Button Text="📷"
+                                            IsVisible="{Binding TieneFoto}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=VerFotoAlimentoCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Style="{StaticResource BotonIconoStyle}" />
+
+                                    <Button Text="✏️"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vMisAlimentosViewModel}}, Path=EditarAlimentoCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Style="{StaticResource BotonIconoStyle}" />
+                                </HorizontalStackLayout>
+
                             </VerticalStackLayout>
 
                         </Grid>
@@ -112,4 +108,3 @@
 
     </Grid>
 </ContentPage>
-    

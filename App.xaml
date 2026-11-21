@@ -48,7 +48,7 @@
                 <Setter Property="FontAttributes"
                         Value="Bold" />
             </Style>
-
+            
             <!-- ESTILOS GLOBALES DE BOTONES DE ACCIÓN (CONSUMIR / ELIMINAR) -->
             <Style x:Key="BotonConsumirStyle"
                    TargetType="Button">
@@ -72,6 +72,25 @@
                         Value="White" />
                 <Setter Property="CornerRadius"
                         Value="8" />
+                <Setter Property="WidthRequest"
+                        Value="40" />
+                <Setter Property="HeightRequest"
+                        Value="40" />
+            </Style>
+
+            <!-- ESTILO GLOBAL PARA BOTONES DE ACCIÓN (VER FOTO / EDITAR) -->
+            <Style x:Key="BotonIconoStyle"
+                   TargetType="Button">
+                <Setter Property="BackgroundColor"
+                        Value="Transparent" />
+                <Setter Property="BorderWidth"
+                        Value="0" />
+                <Setter Property="CornerRadius"
+                        Value="8" />
+                <Setter Property="FontSize"
+                        Value="18" />
+                <Setter Property="Padding"
+                        Value="0" />
                 <Setter Property="WidthRequest"
                         Value="40" />
                 <Setter Property="HeightRequest"
