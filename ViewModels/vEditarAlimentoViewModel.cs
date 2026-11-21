@@ -21,6 +21,8 @@ namespace reAprovecha.ViewModels
         private string _categoriaSeleccionada;
         private DateTime _fechaVencimiento = DateTime.Now;
         private string _rutaImagenLocal;
+        private string _estadoFotoTexto;
+        private Color _colorEstadoFoto = Colors.Gray;
 
         // PROPIEDADES PÚBLICAS VINCULADAS A LA INTERFAZ (DATA BINDING)
         public string Nombre
@@ -53,10 +55,23 @@ namespace reAprovecha.ViewModels
             set { if (_rutaImagenLocal != value) { _rutaImagenLocal = value; OnPropertyChanged(nameof(RutaImagenLocal)); } }
         }
 
+        public string EstadoFotoTexto
+        {
+            get => _estadoFotoTexto;
+            set { if (_estadoFotoTexto != value) { _estadoFotoTexto = value; OnPropertyChanged(nameof(EstadoFotoTexto)); } }
+        }
+
+        public Color ColorEstadoFoto
+        {
+            get => _colorEstadoFoto;
+            set { if (_colorEstadoFoto != value) { _colorEstadoFoto = value; OnPropertyChanged(nameof(ColorEstadoFoto)); } }
+        }
+
         // LISTA ESTÁTICA PARA EL COMBOBOX (PICKER)
         public List<string> Categorias { get; }
 
         // COMANDOS PARA LOS BOTONES
+        public ICommand TomarFotoCommand { get; }
         public ICommand GuardarCambiosCommand { get; }
         public ICommand CancelarCommand { get; }
 
@@ -72,6 +87,8 @@ namespace reAprovecha.ViewModels
                 "Frutas", "Verduras", "Lácteos", "Carnes", "Cereales", "Otros"
             };
 
+            TomarFotoCommand = new Command(OnTomarFoto);
+            ActualizarEstadoFoto();
             GuardarCambiosCommand = new Command(OnGuardarCambios);
             CancelarCommand = new Command(OnCancelar);
         }
@@ -90,6 +107,82 @@ namespace reAprovecha.ViewModels
             CategoriaSeleccionada = string.IsNullOrWhiteSpace(alimento.Categoria) ? "Otros" : alimento.Categoria;
             FechaVencimiento = alimento.FechaVencimiento == default ? DateTime.Now : alimento.FechaVencimiento;
             RutaImagenLocal = alimento.RutaImagen;
+            ActualizarEstadoFoto();
+        }
+
+        // MÉTODO PARA ACTUALIZAR EL INDICADOR CON CHECK DE FOTOGRAFÍA ADJUNTA
+        private void ActualizarEstadoFoto()
+        {
+            bool tieneFoto = !string.IsNullOrWhiteSpace(RutaImagenLocal) && File.Exists(RutaImagenLocal);
+
+            if (tieneFoto)
+            {
+                EstadoFotoTexto = "✔ Fotografía adjunta";
+                ColorEstadoFoto = Colors.SeaGreen;
+            }
+            else
+            {
+                EstadoFotoTexto = "📎 No se ha adjuntado ninguna fotografía";
+                ColorEstadoFoto = Colors.Gray;
+            }
+        }
+
+        // LÓGICA PARA TOMAR O SELECCIONAR FOTOGRAFÍA DEL ALIMENTO
+        private async void OnTomarFoto()
+        {
+            var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (page is null) return;
+
+            try
+            {
+                string opcion = await page.DisplayActionSheetAsync(
+                    "Fotografía del alimento",
+                    "Cancelar",
+                    null,
+                    "Tomar foto con cámara",
+                    "Elegir de galería");
+
+                if (string.IsNullOrWhiteSpace(opcion) || opcion == "Cancelar")
+                {
+                    return;
+                }
+
+                FileResult archivo = null;
+
+                if (opcion == "Tomar foto con cámara")
+                {
+                    if (MediaPicker.Default.IsCaptureSupported)
+                    {
+                        archivo = await MediaPicker.Default.CapturePhotoAsync();
+                    }
+                }
+                else if (opcion == "Elegir de galería")
+                {
+                    var resultados = await MediaPicker.Default.PickPhotosAsync();
+                    archivo = resultados?.FirstOrDefault();
+                }
+
+                if (archivo != null)
+                {
+                    string nombreArchivo = $"alimento_{Guid.NewGuid()}{Path.GetExtension(archivo.FileName)}";
+                    string rutaDestino = Path.Combine(FileSystem.AppDataDirectory, nombreArchivo);
+
+                    await using var streamOrigen = await archivo.OpenReadAsync();
+                    await using var streamDestino = File.OpenWrite(rutaDestino);
+                    await streamOrigen.CopyToAsync(streamDestino);
+
+                    RutaImagenLocal = rutaDestino;
+                    ActualizarEstadoFoto();
+                }
+            }
+            catch (PermissionException)
+            {
+                await page.DisplayAlertAsync("Permiso requerido", "Debes conceder permiso para acceder a la cámara o galería.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await page.DisplayAlertAsync("Error", $"No se pudo actualizar la fotografía: {ex.Message}", "OK");
+            }
         }
 
         // LÓGICA DE ACTUALIZACIÓN Y VALIDACIÓN CON PERSISTENCIA LOCAL SQLITE

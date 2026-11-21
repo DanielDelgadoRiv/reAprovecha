@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:reAprovecha.ViewModels"
              x:Class="reAprovecha.Views.vEditarAlimento"
              Title="Editar Alimento"
-             BackgroundColor="{StaticResource VerdeFondo}">
+             BackgroundColor="White">
 
     <!-- ENLACE CON EL VIEWMODEL -->
     <ContentPage.BindingContext>
@@ -12,55 +12,74 @@
     </ContentPage.BindingContext>
 
     <!-- CONTENEDOR PRINCIPAL DESPLAZABLE -->
-    <ScrollView Padding="16">
-        <VerticalStackLayout Spacing="14">
+    <ScrollView>
+        <VerticalStackLayout Padding="30"
+                             Spacing="15">
 
-            <!-- ENCABEZADO DE LA PANTALLA -->
+            <!-- TÍTULO DE LA VISTA -->
             <Label Text="Editar Alimento"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   TextColor="{StaticResource Blanco}" />
+                   FontSize="28"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,10"
+                   TextColor="{StaticResource VerdePrincipal}" />
 
-            <!-- SECCIÓN DE ENTRADA DE DATOS -->
-            <Border Style="{StaticResource CardBorderStyle}"
-                    Padding="16">
-                <VerticalStackLayout Spacing="12">
-
-                    <Label Text="Nombre del alimento"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource VerdePrincipal}" />
-                    <Entry Text="{Binding Nombre}"
-                           Placeholder="Ej. Leche entera" />
-
-                    <Label Text="Cantidad"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource VerdePrincipal}" />
-                    <Entry Text="{Binding Cantidad}"
-                           Placeholder="Ej. 1 Litro o 500 g" />
-
-                    <Label Text="Categoría"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource VerdePrincipal}" />
-                    <Picker ItemsSource="{Binding Categorias}"
-                            SelectedItem="{Binding CategoriaSeleccionada}" />
-
-                    <Label Text="Fecha de vencimiento"
-                           FontAttributes="Bold"
-                           TextColor="{StaticResource VerdePrincipal}" />
-                    <DatePicker Date="{Binding FechaVencimiento}" />
-
-                </VerticalStackLayout>
+            <!-- NOMBRE DEL ALIMENTO -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Entry Placeholder="Nombre del alimento"
+                       Text="{Binding Nombre}"
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       FontSize="16" />
             </Border>
 
-            <!-- BOTÓN DE ACCIÓN -->
-            <VerticalStackLayout Spacing="10">
-                <Button Text="Guardar cambios"
-                        Command="{Binding GuardarCambiosCommand}"
-                        Style="{StaticResource BotonVerdeStyle}" />
+            <!-- CANTIDAD -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Entry Placeholder="Cantidad (Ej. 2 kg)"
+                       Text="{Binding Cantidad}"
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       FontSize="16" />
+            </Border>
 
-                <Button Text="Cancelar"
-                        Command="{Binding CancelarCommand}" />
-            </VerticalStackLayout>
+            <!-- CATEGORÍA (COMBOBOX) -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <Picker Title="Seleccionar categoría"
+                        ItemsSource="{Binding Categorias}"
+                        SelectedItem="{Binding CategoriaSeleccionada}"
+                        TitleColor="Gray"
+                        TextColor="Black"
+                        FontSize="16" />
+            </Border>
+
+            <!-- FECHA DE VENCIMIENTO -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <DatePicker Date="{Binding FechaVencimiento}"
+                            TextColor="Black"
+                            FontSize="16" />
+            </Border>
+
+            <!-- SECCIÓN DE FOTOGRAFÍA (AGREGAR O EDITAR) -->
+            <Button Text="Tomar / Adjuntar Fotografía"
+                    Command="{Binding TomarFotoCommand}"
+                    Style="{StaticResource BotonVerdeStyle}"
+                    Margin="0,5,0,0" />
+
+            <!-- INDICADOR DE ESTADO CON CHECK DE FOTO ADJUNTA -->
+            <Label Text="{Binding EstadoFotoTexto}"
+                   TextColor="{Binding ColorEstadoFoto}"
+                   FontSize="14"
+                   Margin="0,0,0,0" />
+
+            <!-- BOTONES DE ACCIÓN -->
+            <Button Text="Guardar Cambios"
+                    Command="{Binding GuardarCambiosCommand}"
+                    Style="{StaticResource BotonVerdeStyle}"
+                    Margin="0,5,0,0" />
+
+            <Button Text="Cancelar"
+                    Command="{Binding CancelarCommand}"
+                    Style="{StaticResource BotonVerdeStyle}"
+                    Margin="0,0,0,0" />
 
         </VerticalStackLayout>
     </ScrollView>
