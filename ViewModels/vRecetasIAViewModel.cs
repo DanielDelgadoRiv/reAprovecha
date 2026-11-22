@@ -18,6 +18,8 @@ namespace reAprovecha.ViewModels
         private string _ingredientesAdicionales;
         private string _recetaGenerada;
         private bool _estaCargando;
+        private string _ultimaRecetaGenerada = string.Empty;
+        private bool _tieneRecetaGenerada;
 
         // PROPIEDADES PÚBLICAS VINCULADAS A LA INTERFAZ
         public string ResumenPrioritarios
@@ -44,9 +46,16 @@ namespace reAprovecha.ViewModels
             set { if (_estaCargando != value) { _estaCargando = value; OnPropertyChanged(nameof(EstaCargando)); } }
         }
 
+        public bool TieneRecetaGenerada
+        {
+            get => _tieneRecetaGenerada;
+            set { if (_tieneRecetaGenerada != value) { _tieneRecetaGenerada = value; OnPropertyChanged(nameof(TieneRecetaGenerada)); } }
+        }
+
         // COMANDOS DE LA VISTA
         public ICommand GenerarRecetaCommand { get; }
         public ICommand CargarPrioritariosCommand { get; }
+        public ICommand OtraRecetaCommand { get; }
 
         // CONSTRUCTOR
         public vRecetasIAViewModel()
@@ -61,6 +70,7 @@ namespace reAprovecha.ViewModels
 
             GenerarRecetaCommand = new Command(async () => await OnGenerarRecetaAsync());
             CargarPrioritariosCommand = new Command(async () => await CargarInventarioPrioritarioAsync());
+            OtraRecetaCommand = new Command(async () => await OnGenerarRecetaAsync(solicitarAlternativa: true));
 
             _ = CargarInventarioPrioritarioAsync();
         }
@@ -104,23 +114,30 @@ namespace reAprovecha.ViewModels
         }
 
         // LÓGICA PARA SOLICITAR LA RECETA AL SERVICIO DE IA
-        private async Task OnGenerarRecetaAsync()
+        private async Task OnGenerarRecetaAsync(bool solicitarAlternativa = false)
         {
             if (EstaCargando) return;
 
             try
             {
                 EstaCargando = true;
-                RecetaGenerada = "Generando receta inteligente priorizando tus alimentos próximos a vencer...";
+                RecetaGenerada = solicitarAlternativa
+                    ? "Buscando otra receta diferente priorizando tus alimentos próximos a vencer..."
+                    : "Generando receta inteligente priorizando tus alimentos próximos a vencer...";
 
                 await CargarInventarioPrioritarioAsync();
+
+                string anterior = solicitarAlternativa ? _ultimaRecetaGenerada : string.Empty;
 
                 string resultado = await _recetasIAService.GenerarRecetaAsync(
                     _alimentosPorVencer,
                     _otrosAlimentos,
-                    IngredientesAdicionales);
+                    IngredientesAdicionales,
+                    anterior);
 
                 RecetaGenerada = resultado;
+                _ultimaRecetaGenerada = resultado;
+                TieneRecetaGenerada = true;
             }
             catch (Exception ex)
             {

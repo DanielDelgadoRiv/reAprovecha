@@ -51,6 +51,12 @@
                     Command="{Binding GenerarRecetaCommand}"
                     Style="{StaticResource BotonVerdeStyle}" />
 
+            <!-- BOTÓN PARA SOLICITAR OTRA RECETA DIFERENTE -->
+            <Button Text="Otra Receta"
+                    Command="{Binding OtraRecetaCommand}"
+                    IsVisible="{Binding TieneRecetaGenerada}"
+                    Style="{StaticResource BotonVerdeStyle}" />
+
             <!-- INDICADOR DE CARGA -->
             <ActivityIndicator IsRunning="{Binding EstaCargando}"
                                IsVisible="{Binding EstaCargando}"
