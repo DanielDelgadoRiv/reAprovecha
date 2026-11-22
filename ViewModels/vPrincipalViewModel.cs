@@ -108,7 +108,7 @@ namespace reAprovecha.ViewModels
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (page is null) return;
 
-            await page.DisplayAlertAsync("Recetas IA", "Módulo de OpenAI en desarrollo.", "OK");
+            await page.Navigation.PushAsync(new vRecetasIA());
         }
 
         // LÓGICA DE NAVEGACIÓN HACIA UBICACIÓN

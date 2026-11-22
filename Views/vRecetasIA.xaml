@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:reAprovecha.ViewModels"
+             x:Class="reAprovecha.Views.vRecetasIA"
+             Title="Recetas con IA"
+             BackgroundColor="{StaticResource VerdeFondo}">
+
+    <!-- ENLACE CON EL VIEWMODEL -->
+    <ContentPage.BindingContext>
+        <viewmodels:vRecetasIAViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- CONTENEDOR PRINCIPAL DESPLAZABLE -->
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15">
+
+            <!-- TÍTULO DE LA VISTA -->
+            <Label Text="Recetas Inteligentes"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Blanco}" />
+
+            <!-- SECCIÓN DE ALIMENTOS PRIORITARIOS A VENCER -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    BackgroundColor="White"
+                    Padding="15">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Ingredientes Prioritarios del Hogar"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource VerdePrincipal}" />
+                    <Label Text="{Binding ResumenPrioritarios}"
+                           FontSize="14"
+                           TextColor="DarkRed" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SECCIÓN DE ENTRADA DE INGREDIENTES ADICIONALES -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    BackgroundColor="White">
+                <Entry Placeholder="¿Algún ingrediente extra o preferencia? (Opcional)"
+                       Text="{Binding IngredientesAdicionales}"
+                       TextColor="Black"
+                       PlaceholderColor="Gray"
+                       FontSize="15" />
+            </Border>
+
+            <!-- BOTÓN DE ACCIÓN -->
+            <Button Text="Generar Receta con IA"
+                    Command="{Binding GenerarRecetaCommand}"
+                    Style="{StaticResource BotonVerdeStyle}" />
+
+            <!-- INDICADOR DE CARGA -->
+            <ActivityIndicator IsRunning="{Binding EstaCargando}"
+                               IsVisible="{Binding EstaCargando}"
+                               Color="{StaticResource Blanco}" />
+
+            <!-- SECCIÓN DE RESULTADO DE LA RECETA GENERADA -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    BackgroundColor="White"
+                    Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Sugerencia de Aprovechamiento"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource VerdePrincipal}" />
+                    <Label Text="{Binding RecetaGenerada}"
+                           FontSize="14"
+                           TextColor="Black"
+                           LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
