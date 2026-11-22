@@ -117,7 +117,7 @@ namespace reAprovecha.ViewModels
             var page = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (page is null) return;
 
-            await page.DisplayAlertAsync("GPS", "Módulo de mapas y ubicaciones en desarrollo.", "OK");
+            await page.Navigation.PushAsync(new vUbicacion());
         }
 
         // LÓGICA PARA EDITAR EL NOMBRE DE USUARIO
@@ -142,7 +142,7 @@ namespace reAprovecha.ViewModels
                 // ACTUALIZAMOS LA PROPIEDAD REACTIVA PARA QUE LA VISTA REFLEJE EL CAMBIO AL INSTANTE
                 SaludoUsuario = $"¡Hola, {nuevoNombre.Trim()}!";
 
-                await page.DisplayAlertAsync("Éxito", "Nombre de usuario actualizado correctamente.", "OK");
+                //await page.DisplayAlertAsync("Éxito", "Nombre de usuario actualizado correctamente.", "OK");
             }
         }
 

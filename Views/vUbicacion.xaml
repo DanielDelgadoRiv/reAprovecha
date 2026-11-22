@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:reAprovecha.ViewModels"
+             x:Class="reAprovecha.Views.vUbicacion"
+             Title="Ubicación y Comercios"
+             BackgroundColor="{StaticResource VerdeFondo}">
+
+    <!-- ENLACE CON EL VIEWMODEL -->
+    <ContentPage.BindingContext>
+        <viewmodels:vUbicacionViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- CONTENEDOR PRINCIPAL DESPLAZABLE -->
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="15">
+
+            <!-- TÍTULO DE LA VISTA -->
+            <Label Text="Comercios Cercanos"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Blanco}" />
+
+            <!-- SECCIÓN DE ESTADO DEL SENSOR GPS -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    BackgroundColor="White"
+                    Padding="15">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Tu Ubicación Actual (GPS)"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource VerdePrincipal}" />
+                    <Label Text="{Binding EstadoUbicacion}"
+                           FontSize="14"
+                           TextColor="Black" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- BOTÓN DE ACCIÓN PARA CONSULTAR GPS -->
+            <Button Text="Actualizar Ubicación GPS"
+                    Command="{Binding ActualizarUbicacionCommand}"
+                    Style="{StaticResource BotonVerdeStyle}" />
+
+            <!-- INDICADOR DE CARGA -->
+            <ActivityIndicator IsRunning="{Binding EstaCargando}"
+                               IsVisible="{Binding EstaCargando}"
+                               Color="{StaticResource Blanco}" />
+
+            <!-- SECCIÓN DE BÚSQUEDA DE INGREDIENTES FALTANTES -->
+            <Border Style="{StaticResource CardBorderStyle}"
+                    BackgroundColor="White"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="¿Te falta algún ingrediente de tu receta?"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource VerdePrincipal}" />
+
+                    <Entry Placeholder="Ej. Leche, tomates, ajo..."
+                           Text="{Binding IngredienteBuscado}"
+                           TextColor="Black"
+                           PlaceholderColor="Gray"
+                           FontSize="15" />
+
+                    <Button Text="Buscar en Mapa"
+                            Command="{Binding BuscarEnMapaCommand}"
+                            Style="{StaticResource BotonVerdeStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SECCIÓN DE LISTADO DE COMERCIOS CERCANOS -->
+            <Label Text="Lugares Sugeridos Cerca de Ti"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Blanco}" />
+
+            <CollectionView ItemsSource="{Binding ListaComercios}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardBorderStyle}"
+                                BackgroundColor="White"
+                                Margin="0,0,0,10"
+                                Padding="15">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="{Binding Nombre}"
+                                       FontSize="17"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource VerdePrincipal}" />
+                                <Label Text="{Binding Tipo}"
+                                       FontSize="14"
+                                       TextColor="Gray" />
+                                <Label Text="{Binding DistanciaReferencial}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="DarkRed" />
+                                <Label Text="{Binding Descripcion}"
+                                       FontSize="13"
+                                       TextColor="Black" />
+                                <Button Text="Ver en Mapa"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:vUbicacionViewModel}}, Path=AbrirComercioMapaCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource BotonVerdeStyle}"
+                                        Margin="0,5,0,0" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+    

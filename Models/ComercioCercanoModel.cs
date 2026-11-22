@@ -1,0 +1,12 @@
+﻿namespace reAprovecha.Models
+{
+    public class ComercioCercanoModel
+    {
+        public string Nombre { get; set; }
+        public string Tipo { get; set; }
+        public string DistanciaReferencial { get; set; }
+        public string Descripcion { get; set; }
+        public double Latitud { get; set; }
+        public double Longitud { get; set; }
+    }
+}
