@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# CREDENCIALES LOCALES DE PRUEBA PARA GEMINI (NO SUBIR A GITHUB)
+Services/ApiKeyLocal.cs

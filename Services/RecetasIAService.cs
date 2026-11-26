@@ -8,9 +8,13 @@ namespace reAprovecha.Services
     {
         private readonly HttpClient _httpClient;
 
-        // MODELO RÁPIDO COMPATIBLE CON GOOGLE GEMINI API
-        private const string ModeloGemini = "gemini-2.5-flash";
-        private const string EndpointGemini = $"https://generativelanguage.googleapis.com/v1beta/models/{ModeloGemini}:generateContent";
+        // LISTA DE MODELOS GRATUITOS EN ORDEN DE PRIORIDAD (SI UNO ESTÁ SATURADO CON 503, USA EL SIGUIENTE)
+        private static readonly string[] ModelosGemini =
+        {
+            "gemini-3.8-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.0-flash"
+        };
 
         public RecetasIAService()
         {
@@ -23,18 +27,26 @@ namespace reAprovecha.Services
         // MÉTODO PARA OBTENER LA API KEY DE GEMINI SIN DEJARLA QUEMADA EN GIT
         private string ObtenerApiKeyConfigurada()
         {
-            // 1. LEER DESDE PREFERENCES LOCALES DEL DISPOSITIVO / EMULADOR
+            // 1. LEER DESDE ARCHIVO LOCAL NO VERSIONADO ApiKeyLocal.cs (ÚTIL PARA PRUEBAS Y APK)
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(ApiKeyLocal.ClaveGemini) &&
+                    ApiKeyLocal.ClaveGemini != "CLAVE_DE_GEMINI")
+                {
+                    return ApiKeyLocal.ClaveGemini.Trim();
+                }
+            }
+            catch
+            {
+                // SI NO SE USA ApiKeyLocal.cs, CONTINÚA CON PREFERENCES
+            }
+
+            // 2. LEER DESDE PREFERENCES LOCALES DEL DISPOSITIVO / EMULADOR
             string clavePreferencias = Preferences.Default.Get("gemini_api_key", string.Empty);
             if (!string.IsNullOrWhiteSpace(clavePreferencias))
             {
                 return clavePreferencias.Trim();
             }
-
-            // 2. OPCIONAL: ARCHIVO LOCAL NO VERSIONADO ApiKeyLocal.cs .gitignore:
-            // if (!string.IsNullOrWhiteSpace(ApiKeyLocal.ClaveGemini))
-            // {
-            //     return ApiKeyLocal.ClaveGemini.Trim();
-            // }
 
             return string.Empty;
         }
@@ -109,42 +121,67 @@ namespace reAprovecha.Services
 
                 string jsonPayload = JsonSerializer.Serialize(payload);
 
-                using var request = new HttpRequestMessage(HttpMethod.Post, EndpointGemini);
-                request.Headers.Add("x-goog-api-key", apiKey);
-                request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-                using var response = await _httpClient.SendAsync(request);
-                if (!response.IsSuccessStatusCode)
+                // PROBAR MODELOS GRATUITOS DISPONIBLES SI EL PRINCIPAL ESTÁ SATURADO (HTTP 503)
+                HttpResponseMessage? response = null;
+                foreach (string modelo in ModelosGemini)
                 {
-                    return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                    string url = $"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent";
+                    using var request = new HttpRequestMessage(HttpMethod.Post, url);
+                    request.Headers.Add("x-goog-api-key", apiKey);
+                    request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                    response = await _httpClient.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        break;
+                    }
+
+                    // SI NO ES SATURACIÓN (503) NI MODELO NO DISPONIBLE (404), DETENER REINTENTOS
+                    int status = (int)response.StatusCode;
+                    if (status != 503 && status != 404)
+                    {
+                        break;
+                    }
+
+                    response.Dispose();
+                    response = null;
                 }
 
-                string jsonRespuesta = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(jsonRespuesta);
-
-                if (!doc.RootElement.TryGetProperty("candidates", out var candidates) || candidates.GetArrayLength() == 0)
+                using (response)
                 {
-                    return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                    if (response == null || !response.IsSuccessStatusCode)
+                    {
+                        return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                    }
+
+                    string jsonRespuesta = await response.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(jsonRespuesta);
+
+                    if (!doc.RootElement.TryGetProperty("candidates", out var candidates) || candidates.GetArrayLength() == 0)
+                    {
+                        return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                    }
+
+                    var parts = candidates[0]
+                        .GetProperty("content")
+                        .GetProperty("parts");
+
+                    if (parts.GetArrayLength() == 0)
+                    {
+                        return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                    }
+
+                    string contenido = parts[0].GetProperty("text").GetString();
+
+                    return string.IsNullOrWhiteSpace(contenido)
+                        ? GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior)
+                        : contenido.Trim();
                 }
-
-                var parts = candidates[0]
-                    .GetProperty("content")
-                    .GetProperty("parts");
-
-                if (parts.GetArrayLength() == 0)
-                {
-                    return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
-                }
-
-                string contenido = parts[0].GetProperty("text").GetString();
-
-                return string.IsNullOrWhiteSpace(contenido)
-                    ? GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior)
-                    : contenido.Trim();
             }
             catch
             {
-                // GESTIÓN SEGURA DE ERRORES DE CONEXIÓN O CUOTA SIN CERRAR LA APLICACIÓN
+                // GESTIÓN SEGURA DE ERRORES DE CONEXIÓN, SATURACIÓN O CUOTA SIN CERRAR LA APLICACIÓN
                 return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
             }
         }
@@ -157,38 +194,56 @@ namespace reAprovecha.Services
             string recetaAnterior)
         {
             var baseReceta = alimentosPorVencer.Any() ? alimentosPorVencer : otrosAlimentos;
-            if (!baseReceta.Any() && string.IsNullOrWhiteSpace(ingredientesExtra))
+            string extraLimpio = (ingredientesExtra ?? string.Empty).Trim();
+            bool tieneExtra = !string.IsNullOrWhiteSpace(extraLimpio);
+
+            if (!baseReceta.Any() && !tieneExtra)
             {
                 return "No tienes alimentos registrados en tu inventario todavía. Registra tus productos o escribe ingredientes arriba para sugerirte una receta.";
             }
 
             string principales = baseReceta.Any()
                 ? string.Join(", ", baseReceta.Take(3).Select(a => a.Nombre))
-                : ingredientesExtra;
+                : extraLimpio;
+
+            string tituloConExtra = tieneExtra && baseReceta.Any()
+                ? $"{principales} con {extraLimpio}"
+                : principales;
+
+            string lineaExtra = tieneExtra
+                ? $"• Ingrediente extra / preferencia indicada: {extraLimpio}\n"
+                : string.Empty;
+
+            string pasoExtra = tieneExtra
+                ? $" e incorpora {extraLimpio} según corresponda"
+                : string.Empty;
 
             string[] alternativas =
             {
-                $"Salteado Rápido de Aprovechamiento con {principales}\n\n" +
+                $"Salteado Rápido de Aprovechamiento con {tituloConExtra}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
+                lineaExtra +
                 "• Ingredientes faltantes sugeridos: Aceite, ajo, sal y especias al gusto.\n\n" +
                 "Preparación:\n" +
-                $"1. Lava y corta en trozos medianos {principales}.\n" +
+                $"1. Lava y corta en trozos medianos {principales}{pasoExtra}.\n" +
                 "2. Saltea a fuego medio durante 8 a 10 minutos con ajo y condimentos.\n" +
                 "3. Sirve caliente para consumir primero lo próximo a vencer.",
 
-                $"Tortilla o Revuelto Casero con {principales}\n\n" +
+                $"Tortilla o Revuelto Casero con {tituloConExtra}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
+                lineaExtra +
                 "• Ingredientes faltantes sugeridos: Huevos o harina base, aceite y sal.\n\n" +
                 "Preparación:\n" +
-                $"1. Pica finamente {principales} y sofríe unos minutos.\n" +
+                $"1. Pica finamente {principales}{pasoExtra} y sofríe unos minutos.\n" +
                 "2. Incorpora la mezcla batida y cocina a fuego suave hasta cuajar.\n" +
                 "3. Acompaña al gusto y aprovecha el lote antes de su vencimiento.",
 
-                $"Bowl o Ensalada Tibia de Aprovechamiento con {principales}\n\n" +
+                $"Bowl o Ensalada Tibia de Aprovechamiento con {tituloConExtra}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
+                lineaExtra +
                 "• Ingredientes faltantes sugeridos: Limón o vinagre, aceite de oliva y sal.\n\n" +
                 "Preparación:\n" +
-                $"1. Prepara {principales} según su textura (cocido o fresco).\n" +
+                $"1. Prepara {principales}{pasoExtra} según su textura (cocido o fresco).\n" +
                 "2. Mezcla en un bowl con un aderezo ligero de limón, aceite y sal.\n" +
                 "3. Consume al momento como opción rápida y nutritiva."
             };
@@ -201,7 +256,7 @@ namespace reAprovecha.Services
                 elegida = alternativas[siguienteIndice];
             }
 
-            return $"{elegida}\n\n(Nota: Configurar API Key de Google Gemini con conexión a Internet para obtener recetas generadas en vivo).";
+            return $"{elegida}\n\n(Nota: Sugerencia local mostrada porque no hay conexión a Internet o el servicio de Gemini está temporalmente saturado).";
         }
     }
 }
