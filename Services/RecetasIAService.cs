@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using reAprovecha.Models;
 
@@ -9,9 +8,9 @@ namespace reAprovecha.Services
     {
         private readonly HttpClient _httpClient;
 
-        // API KEY DE OPENAI PARA PRUEBAS EN VIVO
-        private const string ApiKeyOpenAI = "";
-        private const string EndpointOpenAI = "https://api.openai.com/v1/chat/completions";
+        // MODELO RÁPIDO COMPATIBLE CON GOOGLE GEMINI API
+        private const string ModeloGemini = "gemini-2.5-flash";
+        private const string EndpointGemini = $"https://generativelanguage.googleapis.com/v1beta/models/{ModeloGemini}:generateContent";
 
         public RecetasIAService()
         {
@@ -19,6 +18,25 @@ namespace reAprovecha.Services
             {
                 Timeout = TimeSpan.FromSeconds(25)
             };
+        }
+
+        // MÉTODO PARA OBTENER LA API KEY DE GEMINI SIN DEJARLA QUEMADA EN GIT
+        private string ObtenerApiKeyConfigurada()
+        {
+            // 1. LEER DESDE PREFERENCES LOCALES DEL DISPOSITIVO / EMULADOR
+            string clavePreferencias = Preferences.Default.Get("gemini_api_key", string.Empty);
+            if (!string.IsNullOrWhiteSpace(clavePreferencias))
+            {
+                return clavePreferencias.Trim();
+            }
+
+            // 2. OPCIONAL: ARCHIVO LOCAL NO VERSIONADO ApiKeyLocal.cs .gitignore:
+            // if (!string.IsNullOrWhiteSpace(ApiKeyLocal.ClaveGemini))
+            // {
+            //     return ApiKeyLocal.ClaveGemini.Trim();
+            // }
+
+            return string.Empty;
         }
 
         // MÉTODO PARA GENERAR UNA RECETA PRIORIZANDO ALIMENTOS PRÓXIMOS A VENCER
@@ -37,8 +55,10 @@ namespace reAprovecha.Services
                 ? string.Join(", ", otrosAlimentos.Select(a => $"{a.Nombre} ({a.Cantidad})"))
                 : "Sin otros ingredientes registrados";
 
+            string apiKey = ObtenerApiKeyConfigurada();
+
             // SI NO HAY API KEY CONFIGURADA O NO HAY INTERNET, DEVOLVEMOS UNA SUGERENCIA SEGURA SIN CERRAR LA APP
-            if (string.IsNullOrWhiteSpace(ApiKeyOpenAI) || Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            if (string.IsNullOrWhiteSpace(apiKey) || Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
             }
@@ -50,32 +70,47 @@ namespace reAprovecha.Services
                     : $"- IMPORTANTE: Propón una receta DIFERENTE a esta anterior: {recetaAnterior}.\n";
 
                 string promptUsuario =
-                    $"Eres un asistente culinario enfocado en reducir el desperdicio de alimentos (ODS 12). " +
-                    $"Genera una receta práctica, económica y saludable en español.\n" +
+                    "Genera una receta práctica, económica y saludable en español para reducir el desperdicio de alimentos (ODS 12).\n" +
                     $"- Alimentos PRIORITARIOS (próximos a vencer, úsalos como base principal): {listaUrgentes}.\n" +
                     $"- Otros alimentos disponibles en casa: {listaDisponibles}.\n" +
                     $"- Preferencia o ingrediente adicional indicado por el usuario: {(string.IsNullOrWhiteSpace(ingredientesExtra) ? "Ninguno" : ingredientesExtra)}.\n" +
                     instruccionVariacion +
-                    $"Estructura la respuesta exactamente con:\n" +
-                    $"1. Nombre de la receta\n" +
-                    $"2. Ingredientes del hogar utilizados\n" +
-                    $"3. Ingredientes faltantes (si hiciera falta alguno básico para comprar)\n" +
-                    $"4. Pasos de preparación breves.";
+                    "Estructura la respuesta exactamente con:\n" +
+                    "1. Nombre de la receta\n" +
+                    "2. Ingredientes del hogar utilizados\n" +
+                    "3. Ingredientes faltantes (si hiciera falta alguno básico para comprar)\n" +
+                    "4. Pasos de preparación breves.";
 
                 var payload = new
                 {
-                    model = "gpt-4o-mini",
-                    messages = new[]
+                    systemInstruction = new
                     {
-                        new { role = "system", content = "Eres un chef experto en aprovechamiento de alimentos del hogar." },
-                        new { role = "user", content = promptUsuario }
+                        parts = new[]
+                        {
+                            new { text = "Eres un asistente culinario experto en aprovechamiento responsable de alimentos en el hogar." }
+                        }
                     },
-                    temperature = 0.7
+                    contents = new[]
+                    {
+                        new
+                        {
+                            role = "user",
+                            parts = new[]
+                            {
+                                new { text = promptUsuario }
+                            }
+                        }
+                    },
+                    generationConfig = new
+                    {
+                        temperature = 0.7
+                    }
                 };
 
                 string jsonPayload = JsonSerializer.Serialize(payload);
-                using var request = new HttpRequestMessage(HttpMethod.Post, EndpointOpenAI);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", ApiKeyOpenAI);
+
+                using var request = new HttpRequestMessage(HttpMethod.Post, EndpointGemini);
+                request.Headers.Add("x-goog-api-key", apiKey);
                 request.Content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
                 using var response = await _httpClient.SendAsync(request);
@@ -86,11 +121,22 @@ namespace reAprovecha.Services
 
                 string jsonRespuesta = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(jsonRespuesta);
-                string contenido = doc.RootElement
-                    .GetProperty("choices")[0]
-                    .GetProperty("message")
+
+                if (!doc.RootElement.TryGetProperty("candidates", out var candidates) || candidates.GetArrayLength() == 0)
+                {
+                    return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                }
+
+                var parts = candidates[0]
                     .GetProperty("content")
-                    .GetString();
+                    .GetProperty("parts");
+
+                if (parts.GetArrayLength() == 0)
+                {
+                    return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
+                }
+
+                string contenido = parts[0].GetProperty("text").GetString();
 
                 return string.IsNullOrWhiteSpace(contenido)
                     ? GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior)
@@ -98,7 +144,7 @@ namespace reAprovecha.Services
             }
             catch
             {
-                // GESTIÓN SEGURA DE ERRORES DE CONEXIÓN SIN CERRAR LA APLICACIÓN
+                // GESTIÓN SEGURA DE ERRORES DE CONEXIÓN O CUOTA SIN CERRAR LA APLICACIÓN
                 return GenerarSugerenciaLocalRespaldo(alimentosPorVencer, otrosAlimentos, ingredientesExtra, recetaAnterior);
             }
         }
@@ -124,27 +170,27 @@ namespace reAprovecha.Services
             {
                 $"Salteado Rápido de Aprovechamiento con {principales}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
-                $"• Ingredientes faltantes sugeridos: Aceite, ajo, sal y especias al gusto.\n\n" +
-                $"Preparación:\n" +
+                "• Ingredientes faltantes sugeridos: Aceite, ajo, sal y especias al gusto.\n\n" +
+                "Preparación:\n" +
                 $"1. Lava y corta en trozos medianos {principales}.\n" +
-                $"2. Saltea a fuego medio durante 8 a 10 minutos con ajo y condimentos.\n" +
-                $"3. Sirve caliente para consumir primero lo próximo a vencer.",
+                "2. Saltea a fuego medio durante 8 a 10 minutos con ajo y condimentos.\n" +
+                "3. Sirve caliente para consumir primero lo próximo a vencer.",
 
                 $"Tortilla o Revuelto Casero con {principales}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
-                $"• Ingredientes faltantes sugeridos: Huevos o harina base, aceite y sal.\n\n" +
-                $"Preparación:\n" +
+                "• Ingredientes faltantes sugeridos: Huevos o harina base, aceite y sal.\n\n" +
+                "Preparación:\n" +
                 $"1. Pica finamente {principales} y sofríe unos minutos.\n" +
-                $"2. Incorpora la mezcla batida y cocina a fuego suave hasta cuajar.\n" +
-                $"3. Acompaña al gusto y aprovecha el lote antes de su vencimiento.",
+                "2. Incorpora la mezcla batida y cocina a fuego suave hasta cuajar.\n" +
+                "3. Acompaña al gusto y aprovecha el lote antes de su vencimiento.",
 
                 $"Bowl o Ensalada Tibia de Aprovechamiento con {principales}\n\n" +
                 $"• Ingredientes priorizados (próximos a vencer): {principales}\n" +
-                $"• Ingredientes faltantes sugeridos: Limón o vinagre, aceite de oliva y sal.\n\n" +
-                $"Preparación:\n" +
+                "• Ingredientes faltantes sugeridos: Limón o vinagre, aceite de oliva y sal.\n\n" +
+                "Preparación:\n" +
                 $"1. Prepara {principales} según su textura (cocido o fresco).\n" +
-                $"2. Mezcla en un bowl con un aderezo ligero de limón, aceite y sal.\n" +
-                $"3. Consume al momento como opción rápida y nutritiva."
+                "2. Mezcla en un bowl con un aderezo ligero de limón, aceite y sal.\n" +
+                "3. Consume al momento como opción rápida y nutritiva."
             };
 
             string elegida = alternativas[0];
@@ -155,7 +201,7 @@ namespace reAprovecha.Services
                 elegida = alternativas[siguienteIndice];
             }
 
-            return $"{elegida}\n\n(Nota: Configurar API Key de OpenAI con conexión a Internet para obtener recetas personalizadas con IA).";
+            return $"{elegida}\n\n(Nota: Configurar API Key de Google Gemini con conexión a Internet para obtener recetas generadas en vivo).";
         }
     }
 }
